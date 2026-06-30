@@ -62,16 +62,16 @@
 
       <div class="form-group hidden-step" id="passwordGroup">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder=" " autocomplete="current-password">
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
       </div>
 
       <button type="submit" class="btn-full" id="submitBtn">Continue</button>
 
       <div class="oauth-divider">or log in with</div>
       <div class="oauth-grid">
-        <button type="button" class="oauth-btn" onclick="alert('Social Google Login Placeholder Loop')"><i class="ti ti-brand-google" style="color:#DB4437;"></i> Google</button>
-        <button type="button" class="oauth-btn" onclick="alert('Social Apple Login Placeholder Loop')"><i class="ti ti-brand-apple" style="color:#000000;"></i> Apple</button>
-        <button type="button" class="oauth-btn" onclick="alert('Social Microsoft Login Placeholder Loop')"><i class="ti ti-brand-windows" style="color:#00A4EF;"></i> Windows</button>
+        <button type="button" class="oauth-btn" onclick="alert('Google Link Hook')"><i class="ti ti-brand-google" style="color:#DB4437;"></i> Google</button>
+        <button type="button" class="oauth-btn" onclick="alert('Apple Link Hook')"><i class="ti ti-brand-apple" style="color:#000000;"></i> Apple</button>
+        <button type="button" class="oauth-btn" onclick="alert('Windows Link Hook')"><i class="ti ti-brand-windows" style="color:#00A4EF;"></i> Windows</button>
       </div>
     </form>
   </div>
@@ -91,7 +91,7 @@
     function handleNextStep(event) {
       event.preventDefault();
       const email = document.getElementById('email').value.trim();
-      let db = JSON.parse(localStorage.getItem('pennyDB')) || {};
+      let masterData = JSON.parse(localStorage.getItem('pennyDBMaster')) || { users: {}, globalNextID: 1 };
       
       if(!emailValidated) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -100,7 +100,7 @@
           return;
         }
 
-        if(db[email]) {
+        if(masterData.users && masterData.users[email]) {
           document.getElementById('passwordGroup').classList.remove('hidden-step');
           document.getElementById('password').setAttribute('required', 'required');
           document.getElementById('email').setAttribute('readonly', 'readonly');
@@ -115,14 +115,14 @@
         }
       } else {
         const password = document.getElementById('password').value;
-        if(db[email].password !== password) {
-          showMsg("Incorrect password check for this user entry. Please try again.");
+        if(masterData.users[email].password !== password) {
+          showMsg("Incorrect password. Please try again.");
           return;
         }
         
         showMsg("Sign-in matching complete!", false);
         localStorage.setItem('currentUser', email);
-        localStorage.setItem('userName', db[email].userName || email.split('@')[0]);
+        localStorage.setItem('userName', masterData.users[email].userName || email.split('@')[0]);
         setTimeout(() => { window.location.href = 'BatIndex.html'; }, 800);
       }
     }
