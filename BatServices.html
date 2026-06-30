@@ -21,11 +21,9 @@
   .nav-item.on { background: rgba(82,183,136,0.18); color: var(--green-mid); }
   
   .main { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
-  
   .top-navbar { display: flex; justify-content: flex-end; align-items: center; padding: 12px 28px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 16px; position: sticky; top: 0; z-index: 10; }
   .top-navbar .user-tag { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; }
-  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--red-light); color: var(--red); border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.15s; }
-  .top-navbar .auth-btn:hover { background: #FADBD8; }
+  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--red-light); color: var(--red); border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
   .content-pad { padding: 24px 28px; }
   .topbar { margin-bottom: 24px; }
@@ -53,8 +51,8 @@
     </div>
     <div class="sidebar-nav">
       <a href="BatIndex.html" class="nav-item"><i class="ti ti-home"></i> Dashboard</a>
-      <a href="BatServices.html" class="nav-item on"><i class="ti ti-briefcase"></i> Services</a>
       <a href="BatCreditCard.html" class="nav-item"><i class="ti ti-credit-card"></i> Card Strategy</a>
+      <a href="BatServices.html" class="nav-item on"><i class="ti ti-briefcase"></i> Services</a>
       <a href="BatProfile.html" class="nav-item"><i class="ti ti-user"></i> Profile</a>
       <a href="BatAbout.html" class="nav-item"><i class="ti ti-info-circle"></i> About</a>
     </div>
@@ -69,7 +67,7 @@
     <div class="content-pad">
       <div class="topbar">
         <div class="greeting">Our Services</div>
-        <div class="greeting-sub">Tailored solutions for students and growing businesses.</div>
+        <div class="greeting-sub">Tailored budgeting tiers for individual students and startups.</div>
       </div>
       
       <div class="pricing-grid">
@@ -88,8 +86,8 @@
           <div class="tier-name">Paid Coaching</div>
           <div class="tier-price">$49<span style="font-size:14px; color:var(--text-muted);">/mo</span></div>
           <ul class="tier-features">
-            <li><i class="ti ti-check"></i> 1-on-1 Peer Coaching</li>
-            <li><i class="ti ti-check"></i> Custom Wealth Building Plan</li>
+            <li><i class="ti ti-check"></i> 1-on-1 Peer Financial Coaching</li>
+            <li><i class="ti ti-check"></i> Custom Wealth Building Strategy</li>
           </ul>
           <button class="btn-full">Upgrade Now</button>
         </div>
@@ -99,7 +97,7 @@
           <div class="tier-price">$199<span style="font-size:14px; color:var(--text-muted);">/mo</span></div>
           <ul class="tier-features">
             <li><i class="ti ti-check"></i> Business Case Studies Access</li>
-            <li><i class="ti ti-check"></i> Direct Founder Strategy Calls</li>
+            <li><i class="ti ti-check"></i> Content-as-a-Service (CaaS)</li>
           </ul>
           <button class="btn-full" style="background:var(--navy);">Contact Us</button>
         </div>
@@ -110,10 +108,10 @@
 
 <script>
   const currentUser = localStorage.getItem('currentUser');
-  if(!currentUser) { window.location.href = 'BatSignup.html'; }
+  if(!currentUser) { window.location.href = 'BatSignIn.html'; }
   else { document.getElementById('topEmailLabel').textContent = currentUser; }
 
-  function logout() { localStorage.removeItem('currentUser'); window.location.href = 'BatSignup.html'; }
+  function logout() { localStorage.removeItem('currentUser'); window.location.href = 'BatSignIn.html'; }
 </script>
 </body>
 </html>
