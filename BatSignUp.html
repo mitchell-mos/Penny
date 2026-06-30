@@ -25,7 +25,6 @@
   input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
   input:focus { border-color: var(--green); }
   
-  /* FIXED: Absolute alignment containment for checkbox elements */
   .check-label { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text); cursor: pointer; margin-bottom: 14px; width: 100%; text-align: left; }
   .check-label input[type="checkbox"] { width: auto; margin-top: 3px; flex-shrink: 0; }
   .tos-link { color: var(--green); text-decoration: underline; font-weight: 500; }
@@ -57,15 +56,15 @@
 
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="user@example.com" autocomplete="email" value="" required>
+        <input type="email" id="email" name="email" placeholder="student@vt.edu" autocomplete="email" value="" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="new-password" placeholder=" " autocomplete="new-password" value="" required>
+        <input type="password" id="password" name="new-password" placeholder="••••••••" autocomplete="new-password" value="" required>
       </div>
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirm-password" placeholder=" " autocomplete="new-password" value="" required>
+        <input type="password" id="confirmPassword" name="confirm-password" placeholder="••••••••" autocomplete="new-password" value="" required>
       </div>
 
       <label class="check-label">
@@ -75,7 +74,7 @@
 
       <label class="check-label">
         <input type="checkbox" id="newsletter">
-        <span>Sign up for the Penny newsletter</span>
+        <span>Sign up for the wealth newsletter</span>
       </label>
 
       <button type="submit" class="btn-full">Register & Sign In</button>
@@ -130,6 +129,12 @@
         return;
       }
 
+      let db = JSON.parse(localStorage.getItem('pennyDB')) || {};
+      if(db[email]) {
+        showMsg("An account with this email already exists.");
+        return;
+      }
+
       if(password !== confirmPassword) {
         showMsg("Password confirmations do not match your entry.");
         return;
@@ -139,24 +144,33 @@
         return;
       }
 
-      fetch('http://127.0.0.1:5000/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, confirm_password: confirmPassword, agree_tos: agreeTos, newsletter })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.success) {
-          showMsg("Profile built! Launching session instantly...", false);
-          localStorage.setItem('currentUser', email);
-          if(data.username) localStorage.setItem('userName', data.username);
-          
-          setTimeout(() => { window.location.href = 'BatIndex.html'; }, 1000);
-        } else {
-          showMsg(data.message);
-        }
-      })
-      .catch(() => showMsg("Could not connect to Python Server backend infrastructure. Verify app.py execution."));
+      // Strong password requirement check
+      const hasUpper = /[A-Z]/.test(password);
+      const hasLower = /[a-z]/.test(password);
+      const hasNum = /[0-9]/.test(password);
+      const hasSpecial = /[!@#$%^&*(),.?\":{}|<>\-_]/.test(password);
+      if(!(hasUpper && hasLower && hasNum && hasSpecial && password.length >= 6)) {
+        showMsg("Password too weak. It must include an uppercase letter, lowercase letter, number, special character, and be 6+ characters.");
+        return;
+      }
+
+      // Commit locally
+      db[email] = {
+        password: password,
+        userName: email.split('@')[0],
+        totalBalance: '0',
+        emergencyFund: '0',
+        spentMonth: '0',
+        emergencyGoal: '10000',
+        chartData: [0, 0, 0, 0, 0, 0]
+      };
+
+      localStorage.setItem('pennyDB', JSON.stringify(db));
+      localStorage.setItem('currentUser', email);
+      localStorage.setItem('userName', email.split('@')[0]);
+
+      showMsg("Profile built! Launching session instantly...", false);
+      setTimeout(() => { window.location.href = 'BatIndex.html'; }, 1000);
     }
   </script>
 </body>
