@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penny — Create Account</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1B2B4B; --green: #2D6A4F; --surface: #FFFFFF; --border: #E8E8E2; 
+    --text-muted: #6B7280; --text: #1B2B4B; --red: #C0392B; --red-light: #FDECEA;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--navy); display: flex; flex-direction: column; min-height: 100vh; }
+  .top-navbar { display: flex; justify-content: flex-end; align-items: center; padding: 12px 28px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 16px; }
+  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--green); color: #fff; border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  
+  .auth-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+  .auth-card { background: var(--surface); padding: 40px; border-radius: 14px; width: 100%; max-width: 440px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+  .auth-title { font-family: Georgia, serif; font-size: 24px; margin-bottom: 8px; text-align: center; color: var(--navy); }
+  .auth-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; text-align: center; }
+  
+  .form-group { margin-bottom: 16px; width: 100%; }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; text-align: left; }
+  input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+  input:focus { border-color: var(--green); }
+  
+  /* FIXED: Absolute alignment containment for checkbox elements */
+  .check-label { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text); cursor: pointer; margin-bottom: 14px; width: 100%; text-align: left; }
+  .check-label input[type="checkbox"] { width: auto; margin-top: 3px; flex-shrink: 0; }
+  .tos-link { color: var(--green); text-decoration: underline; font-weight: 500; }
+  
+  .btn-full { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 99px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+  .msg-box { padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 16px; display: none; text-align: center; font-weight: 500; line-height: 1.4; }
+  .msg-error { background: var(--red-light); color: var(--red); }
+  .msg-success { background: #EAF2EC; color: var(--green); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-card { background: var(--surface); border-radius: 14px; max-width: 400px; width: 100%; padding: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+  .modal-title { font-family: Georgia, serif; font-size: 18px; margin-bottom: 12px; color: var(--navy); }
+  .modal-body { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; max-height: 200px; overflow-y: auto; background: #FAFAF7; padding: 12px; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+  <div class="top-navbar">
+    <div style="font-size:13px; color:var(--text-muted);">Already have an account?</div>
+    <button class="auth-btn" onclick="window.location.href='BatSignIn.html'"><i class="ti ti-login"></i> Sign In</button>
+  </div>
+
+  <div class="auth-wrapper">
+    <form class="auth-card" onsubmit="submitRegister(event)" autocomplete="on">
+      <div class="auth-title">Create Account</div>
+      <div class="auth-sub">Set up your unique tracking profile.</div>
+      
+      <div id="statusMsg" class="msg-box"></div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="user@example.com" autocomplete="email" value="" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="new-password" placeholder=" " autocomplete="new-password" value="" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirm-password" placeholder=" " autocomplete="new-password" value="" required>
+      </div>
+
+      <label class="check-label">
+        <input type="checkbox" id="agreeTos">
+        <span>I agree to the <a href="#" class="tos-link" onclick="toggleModal(event, true)">Terms of Service</a></span>
+      </label>
+
+      <label class="check-label">
+        <input type="checkbox" id="newsletter">
+        <span>Sign up for the Penny newsletter</span>
+      </label>
+
+      <button type="submit" class="btn-full">Register & Sign In</button>
+    </form>
+  </div>
+
+  <div class="modal-overlay" id="tosModal">
+    <div class="modal-card">
+      <div class="modal-title">Terms of Service</div>
+      <div class="modal-body">
+        Welcome to Penny. By creating an account, you understand that all parameters saved here are simulated inside your personal application sandbox database instance. Always practice clean financial habits.
+      </div>
+      <button class="btn-full" onclick="toggleModal(null, false)">Accept Terms</button>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailParam = urlParams.get('email');
+      if(emailParam) {
+        document.getElementById('email').value = emailParam;
+        document.getElementById('password').focus();
+      }
+    });
+
+    function toggleModal(e, show) {
+      if(e) e.preventDefault();
+      document.getElementById('tosModal').style.display = show ? 'flex' : 'none';
+      if(!show) document.getElementById('agreeTos').checked = true;
+    }
+
+    function showMsg(text, isError = true) {
+      const msgBox = document.getElementById('statusMsg');
+      msgBox.textContent = text;
+      msgBox.style.display = 'block';
+      msgBox.className = isError ? 'msg-box msg-error' : 'msg-box msg-success';
+    }
+
+    function submitRegister(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const agreeTos = document.getElementById('agreeTos').checked;
+      const newsletter = document.getElementById('newsletter').checked;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailRegex.test(email)) {
+        showMsg("Please enter a structured, valid email address.");
+        return;
+      }
+
+      if(password !== confirmPassword) {
+        showMsg("Password confirmations do not match your entry.");
+        return;
+      }
+      if(!agreeTos) {
+        showMsg("You must review and accept the Terms of Service to proceed.");
+        return;
+      }
+
+      fetch('http://127.0.0.1:5000/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, confirm_password: confirmPassword, agree_tos: agreeTos, newsletter })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success) {
+          showMsg("Profile built! Launching session instantly...", false);
+          localStorage.setItem('currentUser', email);
+          if(data.username) localStorage.setItem('userName', data.username);
+          
+          setTimeout(() => { window.location.href = 'BatIndex.html'; }, 1000);
+        } else {
+          showMsg(data.message);
+        }
+      })
+      .catch(() => showMsg("Could not connect to Python Server backend infrastructure. Verify app.py execution."));
+    }
+  </script>
+</body>
+</html>

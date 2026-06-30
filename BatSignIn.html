@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penny — Sign In</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1B2B4B; --green: #2D6A4F; --surface: #FFFFFF; --border: #E8E8E2; 
+    --text-muted: #6B7280; --text: #1B2B4B; --red: #C0392B; --red-light: #FDECEA;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--navy); display: flex; flex-direction: column; min-height: 100vh; }
+  .top-navbar { display: flex; justify-content: flex-end; align-items: center; padding: 12px 28px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 16px; }
+  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--green); color: #fff; border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  
+  .auth-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .auth-card { background: var(--surface); padding: 40px; border-radius: 14px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+  .auth-title { font-family: Georgia, serif; font-size: 24px; margin-bottom: 8px; text-align: center; color: var(--navy); }
+  .auth-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; text-align: center; line-height: 1.5; }
+  
+  .form-group { margin-bottom: 16px; }
+  .hidden-step { display: none; }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
+  input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+  input:focus { border-color: var(--green); }
+  .btn-full { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 99px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+  
+  .msg-box { padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 16px; display: none; text-align: center; font-weight: 500; line-height: 1.4; }
+  .msg-error { background: var(--red-light); color: var(--red); }
+  .msg-success { background: #EAF2EC; color: var(--green); }
+
+  /* SOCIAL OAUTH TIER */
+  .oauth-divider { display: flex; align-items: center; text-align: center; margin: 20px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+  .oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+  .oauth-divider:not(:empty)::before { margin-right: .5em; }
+  .oauth-divider:not(:empty)::after { margin-left: .5em; }
+  
+  .oauth-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .oauth-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 11px; font-weight: 600; color: var(--text); cursor: pointer; transition: background 0.15s; }
+  .oauth-btn:hover { background: #FAFAF7; }
+</style>
+</head>
+<body>
+
+  <div class="top-navbar">
+    <div style="font-size:13px; color:var(--text-muted);">Need an account?</div>
+    <button class="auth-btn" onclick="window.location.href='BatSignUp.html'"><i class="ti ti-user-plus"></i> Register</button>
+  </div>
+
+  <div class="auth-wrapper">
+    <form class="auth-card" onsubmit="handleNextStep(event)" autocomplete="on">
+      <div class="auth-title">Welcome to Penny</div>
+      <div id="subLabel" class="auth-sub">Enter your email address to sync dashboard metrics.</div>
+      
+      <div id="statusMsg" class="msg-box"></div>
+
+      <div class="form-group" id="emailGroup">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="user@example.com" autocomplete="username" required>
+      </div>
+
+      <div class="form-group hidden-step" id="passwordGroup">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder=" " autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn-full" id="submitBtn">Continue</button>
+
+      <div class="oauth-divider">or log in with</div>
+      <div class="oauth-grid">
+        <button type="button" class="oauth-btn" onclick="alert('Google OAuth endpoint mock loop triggers here.')"><i class="ti ti-brand-google" style="color:#DB4437;"></i> Google</button>
+        <button type="button" class="oauth-btn" onclick="alert('Apple ID secure credential handoff loops here.')"><i class="ti ti-brand-apple" style="color:#000000;"></i> Apple</button>
+        <button type="button" class="oauth-btn" onclick="alert('Microsoft Identity Passport pipeline hooks here.')"><i class="ti ti-brand-windows" style="color:#00A4EF;"></i> Windows</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    if(localStorage.getItem('currentUser')) { window.location.href = 'BatIndex.html'; }
+
+    let emailValidated = false;
+
+    function showMsg(text, isError = true) {
+      const msgBox = document.getElementById('statusMsg');
+      msgBox.textContent = text;
+      msgBox.style.display = 'block';
+      msgBox.className = isError ? 'msg-box msg-error' : 'msg-box msg-success';
+    }
+
+    function handleNextStep(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      
+      if(!emailValidated) {
+        // --- STEP 1: CHECK EMAIL VIA FLASK API ---
+        fetch('http://127.0.0.1:5000/api/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if(data.success) {
+            if(data.exists) {
+              // Account exists: unroll password field safely
+              document.getElementById('passwordGroup').classList.remove('hidden-step');
+              document.getElementById('password').setAttribute('required', 'required');
+              document.getElementById('email').setAttribute('readonly', 'readonly');
+              document.getElementById('subLabel').textContent = "Verify security password keys to launch panel.";
+              document.getElementById('submitBtn').textContent = "Sign In";
+              document.getElementById('statusMsg').style.display = 'none';
+              emailValidated = true;
+              document.getElementById('password').focus();
+            } else {
+              // No account: redirect directly to SignUp with email as a parameter
+              showMsg("No profile active. Routing to Registration panel...", false);
+              setTimeout(() => { window.location.href = `BatSignUp.html?email=${encodeURIComponent(email)}`; }, 800);
+            }
+          } else {
+            showMsg(data.message);
+          }
+        })
+        .catch(() => showMsg("Cannot communicate with Python backend application environment. Ensure app.py runs."));
+      } else {
+        // --- STEP 2: FINALIZE SIGN IN ---
+        const password = document.getElementById('password').value;
+        fetch('http://127.0.0.1:5000/api/signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if(data.success) {
+            showMsg("Sign-in matching complete!", false);
+            localStorage.setItem('currentUser', email);
+            if(data.username) localStorage.setItem('userName', data.username);
+            setTimeout(() => { window.location.href = 'BatIndex.html'; }, 800);
+          } else {
+            showMsg(data.message);
+          }
+        })
+        .catch(() => showMsg("Authentication validation sequence failed at server layer."));
+      }
+    }
+  </script>
+</body>
+</html>

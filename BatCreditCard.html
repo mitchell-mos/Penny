@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penny — Card Strategy</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { 
+    --navy: #1B2B4B; --green: #2D6A4F; --green-light: #EAF2EC; --green-mid: #52B788; 
+    --cream: #FAFAF7; --surface: #FFFFFF; --border: #E8E8E2; --text: #1B2B4B; 
+    --text-muted: #6B7280; --red: #C0392B; --red-light: #FDECEA; --blue-light: #EFF6FF; --blue: #1D4ED8;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+  
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--navy); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+  .sidebar-logo { padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
+  .logo-coin { width: 34px; height: 34px; background: var(--green-mid); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px;}
+  .logo-name { font-family: Georgia, serif; font-size: 18px; color: #fff; }
+  .sidebar-nav { padding: 14px; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 9px; font-size: 13.5px; color: rgba(255,255,255,0.55); margin-bottom: 4px; transition: 0.2s; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+  .nav-item.on { background: rgba(82,183,136,0.18); color: var(--green-mid); }
+  
+  .main { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
+  
+  /* TOP NAV BAR */
+  .top-navbar { display: flex; justify-content: flex-end; align-items: center; padding: 12px 28px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 16px; position: sticky; top: 0; z-index: 10; }
+  .top-navbar .user-tag { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--red-light); color: var(--red); border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.15s; }
+  .top-navbar .auth-btn:hover { background: #FADBD8; }
+
+  .content-pad { padding: 24px 28px; max-width: 900px; }
+  .topbar { margin-bottom: 24px; }
+  .greeting { font-family: Georgia, serif; font-size: 24px; font-weight: normal; }
+  .greeting-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  
+  .two-col { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  
+  /* WALLET MANAGEMENT */
+  .form-group { margin-bottom: 16px; }
+  select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--cream); cursor: pointer; margin-bottom: 10px; }
+  select:focus { border-color: var(--green); }
+  .btn-full { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  
+  .wallet-list { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .wallet-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--green-light); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--green); }
+  .btn-remove { background: transparent; border: none; color: var(--red); cursor: pointer; font-size: 16px; display: flex; align-items: center; }
+  
+  /* MATRIX STRATEGY */
+  .matrix-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .matrix-row:last-child { border-bottom: none; }
+  .matrix-target { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; flex: 1; }
+  .matrix-target i { font-size: 20px; color: var(--text-muted); width: 24px; text-align: center; }
+  
+  .matrix-recommendation { display: flex; flex-direction: column; align-items: flex-end; flex: 1; text-align: right; }
+  .card-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: var(--blue-light); color: var(--blue); border: 1px solid rgba(29,78,216,0.1); margin-bottom: 4px; }
+  .no-card-badge { background: #F5F5F2; color: var(--text-muted); border-color: var(--border); font-weight: normal; font-size: 11px;}
+  .matrix-multiplier { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-light); padding: 2px 8px; border-radius: 4px; }
+  .empty-state { font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-coin"><i class="ti ti-coin"></i></div>
+      <div class="logo-name">Penny</div>
+    </div>
+    <div class="sidebar-nav">
+      <a href="BatIndex.html" class="nav-item"><i class="ti ti-home"></i> Dashboard</a>
+      <a href="BatServices.html" class="nav-item"><i class="ti ti-briefcase"></i> Services</a>
+      <a href="BatCreditCard.html" class="nav-item on"><i class="ti ti-credit-card"></i> Card Strategy</a>
+      <a href="BatProfile.html" class="nav-item"><i class="ti ti-user"></i> Profile</a>
+      <a href="BatAbout.html" class="nav-item"><i class="ti ti-info-circle"></i> About</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="top-navbar">
+      <div class="user-tag"><i class="ti ti-user-circle"></i> <span id="topEmailLabel">Loading...</span></div>
+      <button onclick="logout()" class="auth-btn"><i class="ti ti-logout"></i> Sign Out</button>
+    </div>
+
+    <div class="content-pad">
+      <div class="topbar">
+        <div class="greeting">Card Strategy Optimizer</div>
+        <div class="greeting-sub">Add your active credit cards to see the best way to maximize your cash back and points tiers.</div>
+      </div>
+      
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-wallet"></i> My Wallet</div>
+          <div class="form-group">
+            <select id="cardSelect">
+              <option value="" disabled selected>Select a card to add...</option>
+            </select>
+            <button class="btn-full" onclick="addCard()">Add to Wallet</button>
+          </div>
+          <div id="walletList" class="wallet-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-target"></i> Where to use what</div>
+          <div id="matrixContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- AUTH CHECK ---
+  const currentUser = localStorage.getItem('currentUser');
+  if(!currentUser) { 
+    window.location.href = 'BatSignup.html'; 
+  } else { 
+    document.getElementById('topEmailLabel').textContent = currentUser; 
+  }
+
+  function logout() { localStorage.removeItem('currentUser'); window.location.href = 'BatSignup.html'; }
+
+  // --- MOCK CARD DATABASE ---
+  const cardDatabase = {
+    "chase_sapphire_pref": { name: "Chase Sapphire Preferred", color: "var(--blue)", bg: "var(--blue-light)", rewards: { travel: 2, dining: 3, everyday: 1 } },
+    "amex_gold": { name: "Amex Gold Card", color: "#B8860B", bg: "#FDF5E6", rewards: { dining: 4, groceries: 4, flights: 3, everyday: 1 } },
+    "citi_double": { name: "Citi Double Cash", color: "#008B8B", bg: "#E0FFFF", rewards: { everyday: 2 } },
+    "bofa_custom": { name: "BofA Customized Cash", color: "var(--red)", bg: "var(--red-light)", rewards: { gas: 3, groceries: 2, everyday: 1 } },
+    "discover_it": { name: "Discover It Cash Back", color: "#FF8C00", bg: "#FFF5EE", rewards: { everyday: 1 } }
+  };
+
+  const categories = [
+    { id: "groceries", label: "Groceries & Supermarkets", icon: "ti-shopping-cart" },
+    { id: "dining", label: "Dining & Restaurants", icon: "ti-tools-kitchen-2" },
+    { id: "gas", label: "Gas Stations", icon: "ti-gas-station" },
+    { id: "travel", label: "Travel & Transit", icon: "ti-plane" },
+    { id: "everyday", label: "Everyday Spend (Other)", icon: "ti-receipt" }
+  ];
+
+  let uData = {};
+  let db = {};
+
+  // --- INITIALIZATION ---
+  window.addEventListener('DOMContentLoaded', () => {
+    if(!currentUser) return;
+    
+    db = JSON.parse(localStorage.getItem('pennyDB')) || {};
+    uData = db[currentUser] || {};
+    
+    if(!uData.ownedCards) { uData.ownedCards = []; }
+
+    populateDropdown();
+    renderWallet();
+    renderMatrix();
+  });
+
+  // --- FUNCTIONS ---
+  function populateDropdown() {
+    const select = document.getElementById('cardSelect');
+    select.innerHTML = '<option value="" disabled selected>Select a card to add...</option>';
+    
+    for (const [id, data] of Object.entries(cardDatabase)) {
+      if (!uData.ownedCards.includes(id)) {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = data.name;
+        select.appendChild(option);
+      }
+    }
+  }
+
+  function addCard() {
+    const select = document.getElementById('cardSelect');
+    const cardId = select.value;
+    
+    if (cardId && !uData.ownedCards.includes(cardId)) {
+      uData.ownedCards.push(cardId);
+      saveData();
+      populateDropdown();
+      renderWallet();
+      renderMatrix();
+    }
+  }
+
+  function removeCard(cardId) {
+    uData.ownedCards = uData.ownedCards.filter(id => id !== cardId);
+    saveData();
+    populateDropdown();
+    renderWallet();
+    renderMatrix();
+  }
+
+  function saveData() {
+    db[currentUser] = uData;
+    localStorage.setItem('pennyDB', JSON.stringify(db));
+  }
+
+  function renderWallet() {
+    const list = document.getElementById('walletList');
+    list.innerHTML = '';
+
+    if (uData.ownedCards.length === 0) {
+      list.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center;">Your wallet is empty. Add a card above.</div>';
+      return;
+    }
+
+    uData.ownedCards.forEach(cardId => {
+      const cardInfo = cardDatabase[cardId];
+      if (cardInfo) {
+        list.innerHTML += `
+          <div class="wallet-item">
+            <span><i class="ti ti-credit-card" style="margin-right:6px; vertical-align:-2px;"></i> ${cardInfo.name}</span>
+            <button class="btn-remove" onclick="removeCard('${cardId}')"><i class="ti ti-x"></i></button>
+          </div>
+        `;
+      }
+    });
+  }
+
+  function renderMatrix() {
+    const container = document.getElementById('matrixContainer');
+    container.innerHTML = '';
+
+    if (uData.ownedCards.length === 0) {
+      container.innerHTML = '<div class="empty-state">Add cards to your wallet to see recommendations.</div>';
+      return;
+    }
+
+    categories.forEach(cat => {
+      let bestCardId = null;
+      let maxReward = 0;
+
+      uData.ownedCards.forEach(cardId => {
+        const rewards = cardDatabase[cardId].rewards;
+        const rate = rewards[cat.id] || rewards['everyday'] || 0; 
+        
+        if (rate > maxReward) {
+          maxReward = rate;
+          bestCardId = cardId;
+        }
+      });
+
+      const cardInfo = bestCardId ? cardDatabase[bestCardId] : null;
+      
+      const badgeHtml = cardInfo 
+        ? `<div class="card-badge" style="color:${cardInfo.color}; background:${cardInfo.bg}; border-color:${cardInfo.color}30;">${cardInfo.name}</div>
+           <div class="matrix-multiplier">${maxReward}% Back</div>`
+        : `<div class="card-badge no-card-badge">No card available</div>`;
+
+      container.innerHTML += `
+        <div class="matrix-row">
+          <div class="matrix-target"><i class="ti ${cat.icon}"></i> ${cat.label}</div>
+          <div class="matrix-recommendation">
+            ${badgeHtml}
+          </div>
+        </div>
+      `;
+    });
+  }
+</script>
+</body>
+</html>
