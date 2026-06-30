@@ -56,15 +56,15 @@
 
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="user@example.com" autocomplete="email" value="" required>
+        <input type="email" id="email" name="email" placeholder="student@vt.edu" autocomplete="email" value="" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="new-password" placeholder=" " autocomplete="new-password" value="" required>
+        <input type="password" id="password" name="new-password" placeholder="••••••••" autocomplete="new-password" value="" required>
       </div>
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirm-password" placeholder=" " autocomplete="off" value="" required>
+        <input type="password" id="confirmPassword" name="confirm-password" placeholder="••••••••" autocomplete="off" value="" required>
       </div>
 
       <label class="check-label">
@@ -91,7 +91,7 @@
     </div>
   </div>
 
-  <script {nonce}>
+  <script>
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const emailParam = urlParams.get('email');
@@ -129,7 +129,9 @@
         return;
       }
 
-      if(db && db[email]) {
+      let masterData = JSON.parse(localStorage.getItem('pennyDBMaster')) || { users: {}, globalNextID: 1 };
+      
+      if(masterData.users && masterData.users[email]) {
         showMsg("An account with this email already exists.");
         return;
       }
@@ -152,18 +154,24 @@
         return;
       }
 
-      let db = JSON.parse(localStorage.getItem('pennyDB')) || {};
-      db[email] = {
+      // ASSIGN PERMANENT INCREMENTAL ID
+      const assignedID = masterData.globalNextID || 1;
+      masterData.globalNextID = assignedID + 1; // Counter moves up instantly and never down
+
+      if(!masterData.users) masterData.users = {};
+      masterData.users[email] = {
+        userID: assignedID,
         password: password,
         userName: email.split('@')[0],
         totalBalance: '0',
         emergencyFund: '0',
         spentMonth: '0',
         emergencyGoal: '10000',
-        chartData: [0, 0, 0, 0, 0, 0]
+        chartData: [0, 0, 0, 0, 0, 0],
+        ownedCards: []
       };
 
-      localStorage.setItem('pennyDB', JSON.stringify(db));
+      localStorage.setItem('pennyDBMaster', JSON.stringify(masterData));
       localStorage.setItem('currentUser', email);
       localStorage.setItem('userName', email.split('@')[0]);
 
