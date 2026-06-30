@@ -14,7 +14,6 @@
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
   a { text-decoration: none; color: inherit; }
-  
   .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
   .sidebar { background: var(--navy); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
   .sidebar-logo { padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
@@ -26,12 +25,9 @@
   .nav-item.on { background: rgba(82,183,136,0.18); color: var(--green-mid); }
   
   .main { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
-  
-  /* TOP NAV BAR */
   .top-navbar { display: flex; justify-content: flex-end; align-items: center; padding: 12px 28px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 16px; position: sticky; top: 0; z-index: 10; }
   .top-navbar .user-tag { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; }
-  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--red-light); color: var(--red); border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.15s; }
-  .top-navbar .auth-btn:hover { background: #FADBD8; }
+  .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--red-light); color: var(--red); border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
   .content-pad { padding: 24px 28px; max-width: 900px; }
   .topbar { margin-bottom: 24px; }
@@ -42,17 +38,13 @@
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
   .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
   
-  /* WALLET MANAGEMENT */
-  .form-group { margin-bottom: 16px; }
   select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--cream); cursor: pointer; margin-bottom: 10px; }
-  select:focus { border-color: var(--green); }
   .btn-full { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
   
   .wallet-list { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
   .wallet-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--green-light); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--green); }
   .btn-remove { background: transparent; border: none; color: var(--red); cursor: pointer; font-size: 16px; display: flex; align-items: center; }
   
-  /* MATRIX STRATEGY */
   .matrix-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
   .matrix-row:last-child { border-bottom: none; }
   .matrix-target { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; flex: 1; }
@@ -74,8 +66,8 @@
     </div>
     <div class="sidebar-nav">
       <a href="BatIndex.html" class="nav-item"><i class="ti ti-home"></i> Dashboard</a>
-      <a href="BatServices.html" class="nav-item"><i class="ti ti-briefcase"></i> Services</a>
       <a href="BatCreditCard.html" class="nav-item on"><i class="ti ti-credit-card"></i> Card Strategy</a>
+      <a href="BatServices.html" class="nav-item"><i class="ti ti-briefcase"></i> Services</a>
       <a href="BatProfile.html" class="nav-item"><i class="ti ti-user"></i> Profile</a>
       <a href="BatAbout.html" class="nav-item"><i class="ti ti-info-circle"></i> About</a>
     </div>
@@ -90,7 +82,7 @@
     <div class="content-pad">
       <div class="topbar">
         <div class="greeting">Card Strategy Optimizer</div>
-        <div class="greeting-sub">Add your active credit cards to see the best way to maximize your cash back and points tiers.</div>
+        <div class="greeting-sub">Add your active credit cards to see the best way to maximize your rewards tiers.</div>
       </div>
       
       <div class="two-col">
@@ -115,17 +107,12 @@
 </div>
 
 <script>
-  // --- AUTH CHECK ---
   const currentUser = localStorage.getItem('currentUser');
-  if(!currentUser) { 
-    window.location.href = 'BatSignup.html'; 
-  } else { 
-    document.getElementById('topEmailLabel').textContent = currentUser; 
-  }
+  if(!currentUser) { window.location.href = 'BatSignIn.html'; }
+  else { document.getElementById('topEmailLabel').textContent = currentUser; }
 
-  function logout() { localStorage.removeItem('currentUser'); window.location.href = 'BatSignup.html'; }
+  function logout() { localStorage.removeItem('currentUser'); window.location.href = 'BatSignIn.html'; }
 
-  // --- MOCK CARD DATABASE ---
   const cardDatabase = {
     "chase_sapphire_pref": { name: "Chase Sapphire Preferred", color: "var(--blue)", bg: "var(--blue-light)", rewards: { travel: 2, dining: 3, everyday: 1 } },
     "amex_gold": { name: "Amex Gold Card", color: "#B8860B", bg: "#FDF5E6", rewards: { dining: 4, groceries: 4, flights: 3, everyday: 1 } },
@@ -145,13 +132,10 @@
   let uData = {};
   let db = {};
 
-  // --- INITIALIZATION ---
   window.addEventListener('DOMContentLoaded', () => {
     if(!currentUser) return;
-    
     db = JSON.parse(localStorage.getItem('pennyDB')) || {};
     uData = db[currentUser] || {};
-    
     if(!uData.ownedCards) { uData.ownedCards = []; }
 
     populateDropdown();
@@ -159,16 +143,13 @@
     renderMatrix();
   });
 
-  // --- FUNCTIONS ---
   function populateDropdown() {
     const select = document.getElementById('cardSelect');
     select.innerHTML = '<option value="" disabled selected>Select a card to add...</option>';
-    
     for (const [id, data] of Object.entries(cardDatabase)) {
       if (!uData.ownedCards.includes(id)) {
         const option = document.createElement('option');
-        option.value = id;
-        option.textContent = data.name;
+        option.value = id; option.textContent = data.name;
         select.appendChild(option);
       }
     }
@@ -177,89 +158,51 @@
   function addCard() {
     const select = document.getElementById('cardSelect');
     const cardId = select.value;
-    
     if (cardId && !uData.ownedCards.includes(cardId)) {
       uData.ownedCards.push(cardId);
-      saveData();
-      populateDropdown();
-      renderWallet();
-      renderMatrix();
+      saveData(); populateDropdown(); renderWallet(); renderMatrix();
     }
   }
 
   function removeCard(cardId) {
     uData.ownedCards = uData.ownedCards.filter(id => id !== cardId);
-    saveData();
-    populateDropdown();
-    renderWallet();
-    renderMatrix();
+    saveData(); populateDropdown(); renderWallet(); renderMatrix();
   }
 
-  function saveData() {
-    db[currentUser] = uData;
-    localStorage.setItem('pennyDB', JSON.stringify(db));
-  }
+  function saveData() { db[currentUser] = uData; localStorage.setItem('pennyDB', JSON.stringify(db)); }
 
   function renderWallet() {
-    const list = document.getElementById('walletList');
-    list.innerHTML = '';
-
+    const list = document.getElementById('walletList'); list.innerHTML = '';
     if (uData.ownedCards.length === 0) {
-      list.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center;">Your wallet is empty. Add a card above.</div>';
+      list.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center;">Your wallet is empty.</div>';
       return;
     }
-
     uData.ownedCards.forEach(cardId => {
       const cardInfo = cardDatabase[cardId];
       if (cardInfo) {
-        list.innerHTML += `
-          <div class="wallet-item">
-            <span><i class="ti ti-credit-card" style="margin-right:6px; vertical-align:-2px;"></i> ${cardInfo.name}</span>
-            <button class="btn-remove" onclick="removeCard('${cardId}')"><i class="ti ti-x"></i></button>
-          </div>
-        `;
+        list.innerHTML += `<div class="wallet-item"><span><i class="ti ti-credit-card"></i> ${cardInfo.name}</span><button class="btn-remove" onclick="removeCard('${cardId}')"><i class="ti ti-x"></i></button></div>`;
       }
     });
   }
 
   function renderMatrix() {
-    const container = document.getElementById('matrixContainer');
-    container.innerHTML = '';
-
+    const container = document.getElementById('matrixContainer'); container.innerHTML = '';
     if (uData.ownedCards.length === 0) {
-      container.innerHTML = '<div class="empty-state">Add cards to your wallet to see recommendations.</div>';
+      container.innerHTML = '<div class="empty-state">Add cards to see optimization analytics.</div>';
       return;
     }
-
     categories.forEach(cat => {
-      let bestCardId = null;
-      let maxReward = 0;
-
+      let bestCardId = null; let maxReward = 0;
       uData.ownedCards.forEach(cardId => {
         const rewards = cardDatabase[cardId].rewards;
         const rate = rewards[cat.id] || rewards['everyday'] || 0; 
-        
-        if (rate > maxReward) {
-          maxReward = rate;
-          bestCardId = cardId;
-        }
+        if (rate > maxReward) { maxReward = rate; bestCardId = cardId; }
       });
-
       const cardInfo = bestCardId ? cardDatabase[bestCardId] : null;
-      
       const badgeHtml = cardInfo 
-        ? `<div class="card-badge" style="color:${cardInfo.color}; background:${cardInfo.bg}; border-color:${cardInfo.color}30;">${cardInfo.name}</div>
-           <div class="matrix-multiplier">${maxReward}% Back</div>`
+        ? `<div class="card-badge" style="color:${cardInfo.color}; background:${cardInfo.bg}; border-color:${cardInfo.color}30;">${cardInfo.name}</div><div class="matrix-multiplier">${maxReward}% Back</div>`
         : `<div class="card-badge no-card-badge">No card available</div>`;
-
-      container.innerHTML += `
-        <div class="matrix-row">
-          <div class="matrix-target"><i class="ti ${cat.icon}"></i> ${cat.label}</div>
-          <div class="matrix-recommendation">
-            ${badgeHtml}
-          </div>
-        </div>
-      `;
+      container.innerHTML += `<div class="matrix-row"><div class="matrix-target"><i class="ti ${cat.icon}"></i> ${cat.label}</div><div class="matrix-recommendation">${badgeHtml}</div></div>`;
     });
   }
 </script>
