@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Penny — Profile</title>
+<title>Penny — Profile Control Center</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --navy: #1B2B4B; --green: #2D6A4F; --green-light: #EAF2EC; --green-mid: #52B788; --cream: #FAFAF7; --surface: #FFFFFF; --border: #E8E8E2; --text: #1B2B4B; --text-muted: #6B7280; --red: #C0392B; --red-light: #FDECEA;}
+  :root { 
+    --navy: #1B2B4B; --green: #2D6A4F; --green-light: #EAF2EC; --green-mid: #52B788; 
+    --cream: #FAFAF7; --surface: #FFFFFF; --border: #E8E8E2; --text: #1B2B4B; 
+    --text-muted: #6B7280; --red: #C0392B; --red-light: #FDECEA;
+  }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
   a { text-decoration: none; color: inherit; }
   .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
@@ -25,20 +29,29 @@
   .top-navbar .user-tag { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; }
   .top-navbar .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--red-light); color: var(--red); border: none; border-radius: 99px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-  .content-pad { padding: 24px 28px; }
-  .topbar { margin-bottom: 24px; }
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px 28px; max-width: 1100px; align-items: start; }
+  .topbar { grid-column: span 2; margin-bottom: 8px; }
   .greeting { font-family: Georgia, serif; font-size: 24px; font-weight: normal; }
   .greeting-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 20px; max-width: 500px; }
-  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 20px; width: 100%; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
   .form-group { margin-bottom: 16px; }
   label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
   .input-wrapper { position: relative; display: flex; align-items: center; }
   .input-prefix { position: absolute; left: 12px; font-size: 14px; color: var(--text-muted); }
   input { width: 100%; padding: 10px 12px 10px 26px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--cream); }
   input:focus { border-color: var(--green); }
-  .btn-full { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 99px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .notification { background: var(--green-light); color: var(--green); padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; margin-bottom: 16px; display: none; font-weight: 500; max-width: 500px; }
+  
+  .btn-full { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 99px; padding: 11px; font-size: 13.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .btn-danger { background: var(--red); color: #fff; }
+  .notification { grid-column: span 2; background: var(--green-light); color: var(--green); padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; display: none; font-weight: 500; }
+  
+  /* profile management table styling */
+  .profile-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .profile-row:last-child { border-bottom: none; }
+  .p-email { font-weight: 500; color: var(--text); }
+  .p-id-tag { font-size: 11px; color: var(--text-muted); background: var(--cream); padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -63,57 +76,76 @@
       <button onclick="logout()" class="auth-btn"><i class="ti ti-logout"></i> Sign Out</button>
     </div>
 
-    <div class="content-pad">
+    <div class="content-grid">
       <div class="topbar">
-        <div class="greeting">Profile Settings</div>
-        <div class="greeting-sub">Customize metrics database for <strong id="userEmailLabel"></strong>.</div>
+        <div class="greeting">Profile Settings & Database</div>
+        <div class="greeting-sub">Manage active user parameter baselines and profile clusters.</div>
       </div>
 
-      <div id="saveNotif" class="notification"><i class="ti ti-check"></i> Profile Parameters Saved!</div>
+      <div id="saveNotif" class="notification"><i class="ti ti-check"></i> Changes synchronized successfully!</div>
 
-      <div class="card">
-        <div class="card-title"><i class="ti ti-settings"></i> Preferences</div>
-        <div class="form-group">
-          <label>User Display Name</label>
-          <div class="input-wrapper">
-            <i class="ti ti-user input-prefix"></i>
-            <input type="text" id="userName" placeholder="Alex">
+      <div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-id"></i> Account Parameters</div>
+          <div class="form-group">
+            <label>Permanent User ID (Unalterable)</label>
+            <div class="input-wrapper">
+              <i class="ti ti-lock input-prefix"></i>
+              <input type="text" id="myUserID" readonly style="opacity: 0.65; font-weight: bold; background: #f0f0f0;">
+            </div>
           </div>
+          <div class="form-group">
+            <label>User Display Name</label>
+            <div class="input-wrapper">
+              <i class="ti ti-user input-prefix"></i>
+              <input type="text" id="userName" placeholder="Alex">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-database"></i> Core Metrics Overwrite</div>
+          <div class="form-group"><label>Total Balance</label><div class="input-wrapper"><span class="input-prefix">$</span><input type="number" id="totalBalance"></div></div>
+          <div class="form-group"><label>Emergency Fund Amount</label><div class="input-wrapper"><span class="input-prefix">$</span><input type="number" id="emergencyFund"></div></div>
+          <div class="form-group"><label>Spent This Month</label><div class="input-wrapper"><span class="input-prefix">$</span><input type="number" id="spentMonth"></div></div>
+          <div class="form-group"><label>Emergency Fund Target Goal</label><div class="input-wrapper"><span class="input-prefix">$</span><input type="number" id="emergencyGoal"></div></div>
+          <button class="btn-full" onclick="saveDatabaseData()"><i class="ti ti-device-floppy"></i> Save Local Changes</button>
+        </div>
+
+        <div class="card" style="border: 1px solid rgba(192,57,43,0.3); background: #FFF1EC;">
+          <div class="card-title" style="color: var(--red);"><i class="ti ti-alert-triangle"></i> Danger Zone</div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4;">Deleting your profile clears your parameters and removes your assigned User ID permanently. This operation cannot be reversed.</p>
+          <button class="btn-full btn-danger" onclick="deleteCurrentProfile()"><i class="ti ti-trash"></i> Delete This Profile Permanently</button>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title"><i class="ti ti-database"></i> Core Metrics Database</div>
-        <div class="form-group">
-          <label>Total Balance</label>
-          <div class="input-wrapper">
-            <span class="input-prefix">$</span>
-            <input type="number" id="totalBalance" placeholder="3241">
+      <div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-user-plus"></i> Fast Provision Profile</div>
+          <div class="form-group">
+            <label>New Account Email</label>
+            <div class="input-wrapper">
+              <i class="ti ti-mail input-prefix"></i>
+              <input type="email" id="newEmail" placeholder="peer@vt.edu" style="padding-left: 26px;">
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>Emergency Fund Amount</label>
-          <div class="input-wrapper">
-            <span class="input-prefix">$</span>
-            <input type="number" id="emergencyFund" placeholder="2840">
+          <div class="form-group">
+            <label>Set Secure Password</label>
+            <div class="input-wrapper">
+              <i class="ti ti-key input-prefix"></i>
+              <input type="text" id="newPassword" placeholder="Aa1!••••" style="padding-left: 26px;">
+            </div>
           </div>
+          <button class="btn-full" onclick="provisionProfile()"><i class="ti ti-plus"></i> Provision & Save Profile</button>
         </div>
-        <div class="form-group">
-          <label>Spent This Month</label>
-          <div class="input-wrapper">
-            <span class="input-prefix">$</span>
-            <input type="number" id="spentMonth" placeholder="642">
-          </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-users"></i> System Directory Database</div>
+          <div id="profilesList">
+            </div>
         </div>
-        <div class="form-group">
-          <label>Emergency Fund Target Goal</label>
-          <div class="input-wrapper">
-            <span class="input-prefix">$</span>
-            <input type="number" id="emergencyGoal" placeholder="10000">
-          </div>
-        </div>
-        <button class="btn-full" onclick="saveDatabaseData()"><i class="ti ti-device-floppy"></i> Save Local Changes</button>
       </div>
+
     </div>
   </div>
 </div>
@@ -121,28 +153,31 @@
 <script>
   const currentUser = localStorage.getItem('currentUser');
   if(!currentUser) { window.location.href = 'BatSignIn.html'; }
-  else { 
-    document.getElementById('userEmailLabel').textContent = currentUser; 
-    document.getElementById('topEmailLabel').textContent = currentUser; 
-  }
+  else { document.getElementById('topEmailLabel').textContent = currentUser; }
 
   function logout() { localStorage.removeItem('currentUser'); window.location.href = 'BatSignIn.html'; }
 
+  let masterData = {};
+
   window.addEventListener('DOMContentLoaded', () => {
     if(!currentUser) return;
-    const db = JSON.parse(localStorage.getItem('pennyDB')) || {};
-    const uData = db[currentUser] || {};
+    masterData = JSON.parse(localStorage.getItem('pennyDBMaster')) || { users: {}, globalNextID: 1 };
     
+    const uData = masterData.users[currentUser] || {};
+    
+    // Display User IDs and configuration targets
+    document.getElementById('myUserID').value = "User ID #" + (uData.userID || "N/A");
     document.getElementById('userName').value = uData.userName || '';
-    document.getElementById('totalBalance').value = uData.totalBalance || '';
-    document.getElementById('emergencyFund').value = uData.emergencyFund || '';
-    document.getElementById('spentMonth').value = uData.spentMonth || '';
-    document.getElementById('emergencyGoal').value = uData.emergencyGoal || '';
+    document.getElementById('totalBalance').value = uData.totalBalance || '0';
+    document.getElementById('emergencyFund').value = uData.emergencyFund || '0';
+    document.getElementById('spentMonth').value = uData.spentMonth || '0';
+    document.getElementById('emergencyGoal').value = uData.emergencyGoal || '10000';
+
+    renderSystemDirectory();
   });
 
   function saveDatabaseData() {
-    let db = JSON.parse(localStorage.getItem('pennyDB')) || {};
-    let uData = db[currentUser];
+    let uData = masterData.users[currentUser];
 
     uData.userName = document.getElementById('userName').value;
     uData.totalBalance = document.getElementById('totalBalance').value;
@@ -153,11 +188,84 @@
     if(!uData.chartData) uData.chartData = [0,0,0,0,0,0];
     uData.chartData[5] = parseFloat(uData.totalBalance || 0);
 
-    db[currentUser] = uData;
-    localStorage.setItem('pennyDB', JSON.stringify(db));
+    masterData.users[currentUser] = uData;
+    localStorage.setItem('pennyDBMaster', JSON.stringify(masterData));
     localStorage.setItem('userName', uData.userName);
 
+    triggerNotification("Changes saved successfully!");
+  }
+
+  // --- DYNAMIC PROFILE PROVISIONING FLOW ---
+  function provisionProfile() {
+    const email = document.getElementById('newEmail').value.trim();
+    const password = document.getElementById('newPassword').value;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex || !emailRegex.test(email)) {
+      alert("Invalid email pattern structure entered."); return;
+    }
+    if(masterData.users[email]) {
+      alert("An account registry matching this address is already active."); return;
+    }
+    if(password.length < 4) {
+      alert("Password baseline must be longer for sandbox registration safety."); return;
+    }
+
+    const assignedID = masterData.globalNextID || 1;
+    masterData.globalNextID = assignedID + 1; // Always goes up, never down
+
+    masterData.users[email] = {
+      userID: assignedID,
+      password: password,
+      userName: email.split('@')[0],
+      totalBalance: '0',
+      emergencyFund: '0',
+      spentMonth: '0',
+      emergencyGoal: '10000',
+      chartData: [0, 0, 0, 0, 0, 0],
+      ownedCards: []
+    };
+
+    localStorage.setItem('pennyDBMaster', JSON.stringify(masterData));
+    
+    document.getElementById('newEmail').value = '';
+    document.getElementById('newPassword').value = '';
+    
+    triggerNotification("New profile created successfully!");
+    renderSystemDirectory();
+  }
+
+  // --- DELETE CURRENT PROFILE ---
+  function deleteCurrentProfile() {
+    if(confirm("Confirm: Delete this profile permanently? This profile's assigned User ID will be locked forever and cannot be recycled.")) {
+      delete masterData.users[currentUser];
+      localStorage.setItem('pennyDBMaster', JSON.stringify(masterData));
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('userName');
+      window.location.href = 'BatSignIn.html';
+    }
+  }
+
+  function renderSystemDirectory() {
+    const container = document.getElementById('profilesList');
+    container.innerHTML = '';
+
+    Object.entries(masterData.users).forEach(([email, data]) => {
+      container.innerHTML += `
+        <div class="profile-row">
+          <div>
+            <span class="p-email">${email}</span>
+            <span class="p-id-tag">ID: ${data.userID}</span>
+          </div>
+          <span style="font-size:11px; color:var(--text-muted);">${data.userName}</span>
+        </div>
+      `;
+    });
+  }
+
+  function triggerNotification(text) {
     const notif = document.getElementById('saveNotif');
+    notif.textContent = text;
     notif.style.display = 'block';
     setTimeout(() => { notif.style.display = 'none'; }, 3000);
   }
