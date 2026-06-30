@@ -56,15 +56,15 @@
 
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="user@example.com" autocomplete="email" value="" required>
+        <input type="email" id="email" name="email" placeholder="student@vt.edu" autocomplete="email" value="" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="new-password" placeholder=" " autocomplete="new-password" value="" required>
+        <input type="password" id="password" name="new-password" placeholder="••••••••" autocomplete="new-password" value="" required>
       </div>
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirm-password" placeholder=" " autocomplete="new-password" value="" required>
+        <input type="password" id="confirmPassword" name="confirm-password" placeholder="••••••••" autocomplete="off" value="" required>
       </div>
 
       <label class="check-label">
@@ -91,7 +91,7 @@
     </div>
   </div>
 
-  <script>
+  <script {nonce}>
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const emailParam = urlParams.get('email');
@@ -129,8 +129,7 @@
         return;
       }
 
-      let db = JSON.parse(localStorage.getItem('pennyDB')) || {};
-      if(db[email]) {
+      if(db && db[email]) {
         showMsg("An account with this email already exists.");
         return;
       }
@@ -144,7 +143,6 @@
         return;
       }
 
-      // Strong password requirement check
       const hasUpper = /[A-Z]/.test(password);
       const hasLower = /[a-z]/.test(password);
       const hasNum = /[0-9]/.test(password);
@@ -154,7 +152,7 @@
         return;
       }
 
-      // Commit locally
+      let db = JSON.parse(localStorage.getItem('pennyDB')) || {};
       db[email] = {
         password: password,
         userName: email.split('@')[0],
